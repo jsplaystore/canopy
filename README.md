@@ -2,6 +2,8 @@
 
 Canopy turns Chicago's live 311 tree-service data into a prioritized dispatch tool for arborist crews. It ranks all 77 community areas by a **Canopy Stress Index (CSI)**, maps where the most vulnerable communities are, and generates an AI field briefing for any neighborhood.
 
+In the smart city of 2035, urban trees are critical infrastructure — routed and triaged like ambulances, with drought stress and community equity factored into every dispatch decision. Canopy builds that future today, on Chicago's open data.
+
 **Live:** https://canopy-five-alpha.vercel.app
 
 ## What it does

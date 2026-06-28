@@ -38,6 +38,7 @@
       <div class="tb-stat danger"><span id="stat-high-hdr" class="tb-n">—</span><span class="tb-l">critical zones</span></div>
       <div class="tb-stat"><span class="tb-l">60-day 311 · drought · heat</span></div>
     </div>
+    <button id="heat-btn" class="heat-btn" title="Urban Heat Island">🌡</button>
     <button id="help-btn" class="help-btn" title="How to read Canopy">?</button>
     <div class="tb-src">Chicago Open Data · Open-Meteo</div>
   </header>
@@ -91,26 +92,15 @@
         </div>
       </div>
 
-      <!-- HEAT ISLAND -->
-      <div class="heat-block">
-        <div class="heat-hdr">
-          <span class="heat-title">🌡 Urban Heat Island</span>
-          <span class="heat-sub">Dense areas run hotter · trees are cooling infrastructure</span>
-        </div>
-        <div id="heat-rows" class="heat-rows">
-          <span class="muted-sm">Loading temperatures…</span>
-        </div>
-      </div>
-
       <!-- DISPATCH QUEUE -->
       <div class="zones-hdr">
         <div class="zones-title">Dispatch Queue</div>
         <div id="zones-sub" class="zones-sub">Ranked by open requests + drought stress · click to navigate</div>
       </div>
       <div class="sort-grp">
-        <button class="sort-btn active" data-sort="urgency" onclick="setSortMode('urgency')">Urgency</button>
-        <button class="sort-btn" data-sort="neglect" onclick="setSortMode('neglect')">Neglect</button>
-        <button class="sort-btn" data-sort="trend" onclick="setSortMode('trend')">Trending</button>
+        <button class="sort-btn active" data-sort="urgency" onclick="setSortMode('urgency')" aria-label="Sort by urgency">Urgency</button>
+        <button class="sort-btn" data-sort="neglect" onclick="setSortMode('neglect')" aria-label="Sort by neglect">Neglect</button>
+        <button class="sort-btn" data-sort="trend" onclick="setSortMode('trend')" aria-label="Sort by trending">Trending</button>
       </div>
       <div class="zone-search-w">
         <span class="zs-icon">⌕</span>
@@ -148,6 +138,7 @@
     <button id="help-close" class="help-close">✕</button>
     <div class="help-logo">🌳 Canopy</div>
     <div class="help-tag">Chicago Urban Tree Dispatch — how to read it</div>
+    <p class="help-future">In the smart city of 2035, urban trees are critical infrastructure — routed and triaged like ambulances, with drought stress and equity factored into every dispatch decision. Canopy builds that future, today.</p>
     <ol class="help-steps">
       <li>
         <span class="hs-num">1</span>
@@ -167,6 +158,15 @@
       <div class="hc-body"><b>Canopy Stress Index (0–100)</b> blends five signals into one dispatch priority: open &amp; unresolved requests, complaint surge vs. last month, drought stress, time since last service, and <b>community vulnerability</b> (Chicago Hardship Index). Higher = more urgent. Flip the map to <b>Social vulnerability</b> to see where the most at-risk communities are.</div>
     </div>
     <button id="help-got" class="help-got">Got it — show me the map</button>
+  </div>
+</div>
+
+<!-- HEAT ISLAND DROPDOWN -->
+<div id="heat-dropdown" class="heat-dropdown hidden">
+  <div class="hd-title">🌡 Urban Heat Island</div>
+  <div class="hd-sub">Dense areas run hotter · trees are cooling infrastructure</div>
+  <div id="heat-rows" class="heat-rows">
+    <span class="muted-sm">Loading temperatures…</span>
   </div>
 </div>
 

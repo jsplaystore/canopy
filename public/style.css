@@ -93,8 +93,27 @@ body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color
 /* Shows as hydration meter: full green = well watered, shrinks red-right as drought worsens */
 .drought-fill  { position: absolute; inset: 0; border-radius: 3px; transition: background 0.6s; }
 
-/* Heat island (compact) */
-.heat-block { padding: 0.7rem 1.1rem; border-bottom: 1px solid var(--bdr); flex-shrink: 0; }
+/* Heat island dropdown */
+.heat-btn {
+  flex-shrink: 0; width: 26px; height: 22px; border-radius: 6px;
+  background: var(--surf2); border: 1px solid var(--bdr2);
+  color: var(--muted2); font-size: 0.78rem; cursor: pointer;
+  line-height: 1; transition: all 0.13s; padding: 0;
+}
+.heat-btn:hover, .heat-btn.active { border-color: #f97316; color: #f97316; background: rgba(249,115,22,0.08); }
+.heat-dropdown {
+  position: fixed; top: 52px; right: 322px; z-index: 200;
+  background: var(--surf); border: 1px solid var(--bdr2); border-radius: 12px;
+  padding: 0.85rem 1rem; width: 260px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+  animation: heatIn 0.15s ease;
+}
+@keyframes heatIn { from { opacity: 0; transform: translateY(-6px); } }
+.hd-title { font-size: 0.72rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.hd-sub   { font-size: 0.6rem; color: var(--muted); margin-bottom: 0.65rem; }
+
+/* Heat island rows (shared between dropdown and legacy) */
+.heat-rows  { display: flex; flex-direction: column; gap: 4px; }
 .heat-hdr   { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.45rem; flex-wrap: wrap; }
 .heat-title { font-size: 0.7rem; font-weight: 700; color: var(--text); }
 .heat-sub   { font-size: 0.6rem; color: var(--muted); }

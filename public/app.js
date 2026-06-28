@@ -327,8 +327,8 @@ function buildMap() {
     const d = L.DomUtil.create('div', 'view-toggle');
     d.innerHTML = `
       <div class="vt-hdr">Map view</div>
-      <button class="vt-btn active" data-mode="pressure">🌳 Service pressure</button>
-      <button class="vt-btn" data-mode="vuln">⚖ Social vulnerability</button>`;
+      <button class="vt-btn active" data-mode="pressure" aria-label="View service pressure map">🌳 Service pressure</button>
+      <button class="vt-btn" data-mode="vuln" aria-label="View social vulnerability map">⚖ Social vulnerability</button>`;
     L.DomEvent.disableClickPropagation(d);
     L.DomEvent.disableScrollPropagation(d);
     d.querySelectorAll('.vt-btn').forEach(b => b.addEventListener('click', () => setMapMode(b.dataset.mode)));
@@ -562,7 +562,7 @@ function renderPanel() {
   else if (sortMode === 'trend')
     sorted.sort((a, b) => (b[1].trendPct ?? -999) - (a[1].trendPct ?? -999));
   else
-    sorted.sort((a, b) => b[1].score - a[1].score);
+    sorted.sort((a, b) => (b[1].csi ?? 0) - (a[1].csi ?? 0));
 
   // Filter by neighborhood search
   const q = zoneFilter.trim().toLowerCase();
@@ -608,7 +608,7 @@ function renderPanel() {
         </div>
         <div class="zi-bar"><div class="zi-fill" style="width:${csiVal}%;background:${col}"></div></div>
       </div>
-      <button class="zi-btn" onclick="event.stopPropagation();openDispatch('${k}')">Brief ▸</button>
+      <button class="zi-btn" onclick="event.stopPropagation();openDispatch('${k}')" aria-label="Get dispatch brief for ${name}">Brief ▸</button>
     </div>`;
   }).join('');
 }
@@ -878,6 +878,18 @@ function maybeOnboard() {
   if (!seen) showHelp();
 }
 document.getElementById('help-btn').addEventListener('click', showHelp);
+const heatBtn = document.getElementById('heat-btn');
+const heatDropdown = document.getElementById('heat-dropdown');
+heatBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  const open = !heatDropdown.classList.contains('hidden');
+  heatDropdown.classList.toggle('hidden', open);
+  heatBtn.classList.toggle('active', !open);
+});
+document.addEventListener('click', () => {
+  heatDropdown.classList.add('hidden');
+  heatBtn.classList.remove('active');
+});
 document.getElementById('help-close').addEventListener('click', hideHelp);
 document.getElementById('help-got').addEventListener('click', hideHelp);
 document.getElementById('help-overlay').addEventListener('click', e => {
