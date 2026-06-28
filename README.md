@@ -45,6 +45,4 @@ node server.mjs
 
 Vanilla HTML/CSS/JS + Leaflet. No build step. AI briefings run as a Vercel serverless function (`api/dispatch.js`); `server.mjs` mirrors it for local dev.
 
-## Deploy
 
-Deployed on Vercel. `GROQ_API_KEY` is configured as a Vercel environment variable — it is **never** committed (`.env.local` is gitignored).
