@@ -584,7 +584,7 @@ function renderPanel() {
     const trend = s.trendPct !== null
       ? `<span class="zt ${s.trendPct > 15 ? 'zt-up' : s.trendPct < -15 ? 'zt-dn' : 'zt-fl'}">${s.trendPct > 15 ? '↑' : s.trendPct < -15 ? '↓' : '→'}${Math.abs(s.trendPct)}%</span>`
       : '';
-    return `<div class="zi" data-key="${k}" onclick="clickZone('${k}')">
+    return `<div class="zi" data-key="${k}" onclick="clickZone('${k}')" role="button" tabindex="0" aria-label="${name} — ${TIER_LABEL[s.tier]}, CSI ${csiVal}">
       <div class="zi-rank" style="color:${col}">${i+1}</div>
       <div class="zi-body">
         <div class="zi-top">
