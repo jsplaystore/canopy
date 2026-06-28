@@ -1,0 +1,8 @@
+node_modules/
+package.json
+package-lock.json
+screenshot*.cjs
+screenshot.mjs
+server.mjs
+ss*.png
+ss*.jpg

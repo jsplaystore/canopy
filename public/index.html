@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canopy — Chicago Urban Tree Dispatch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-screen">
+  <div class="ls-wrap">
+    <div class="ls-logo">🌳 Canopy</div>
+    <div class="ls-city">Chicago Urban Tree Dispatch</div>
+    <div class="ls-steps">
+      <div class="ls-step" id="step-1"><span class="step-icon spin">⟳</span><span class="step-text">Loading Chicago 311 tree requests…</span></div>
+      <div class="ls-step pending" id="step-2"><span class="step-icon">·</span><span class="step-text">Loading neighborhood boundaries…</span></div>
+      <div class="ls-step pending" id="step-3"><span class="step-icon">·</span><span class="step-text">Fetching 30-day drought data…</span></div>
+      <div class="ls-step pending" id="step-4"><span class="step-icon">·</span><span class="step-text">Scoring 77 community areas…</span></div>
+    </div>
+    <div id="ls-error" class="ls-error hidden"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="main-app" class="hidden">
+
+  <header class="topbar">
+    <div class="tb-brand">🌳 Canopy</div>
+    <div class="tb-city">Chicago · Live</div>
+    <div class="tb-stats">
+      <div class="tb-stat"><span id="stat-reqs" class="tb-n">—</span><span class="tb-l">requests</span></div>
+      <div class="tb-stat danger"><span id="stat-high-hdr" class="tb-n">—</span><span class="tb-l">critical zones</span></div>
+      <div class="tb-stat"><span class="tb-l">60-day 311 · drought · heat</span></div>
+    </div>
+    <button id="help-btn" class="help-btn" title="How to read Canopy">?</button>
+    <div class="tb-src">Chicago Open Data · Open-Meteo</div>
+  </header>
+
+  <div class="layout">
+    <div id="map"></div>
+
+    <aside class="panel">
+
+      <!-- CITY OVERVIEW -->
+      <div class="ov-block">
+        <div class="ov-title">City-Wide Status</div>
+        <div class="ov-bar">
+          <div class="pb-seg seg-hi"   id="pb-high"></div>
+          <div class="pb-seg seg-med"  id="pb-medium"></div>
+          <div class="pb-seg seg-low"  id="pb-low"></div>
+          <div class="pb-seg seg-none" id="pb-none"></div>
+        </div>
+        <div class="ov-counts">
+          <span class="ov-c hi"><span id="pl-high">—</span> critical</span>
+          <span class="ov-c med"><span id="pl-med">—</span> elevated</span>
+          <span class="ov-c low"><span id="pl-low">—</span> routine</span>
+        </div>
+        <div class="drought-row">
+          <div class="drought-left">
+            <span class="drought-icon">🌧</span>
+            <div>
+              <div id="drought-status" class="drought-status">—</div>
+              <div id="drought-detail" class="drought-detail">—</div>
+            </div>
+          </div>
+          <div class="drought-bar-w">
+            <div id="drought-fill" class="drought-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CITY INTELLIGENCE -->
+      <div class="intel-block">
+        <div class="intel-stat">
+          <span id="intel-open" class="intel-n">—</span>
+          <span class="intel-l">city-wide open</span>
+        </div>
+        <div class="intel-stat">
+          <span id="intel-up" class="intel-n">—</span>
+          <span class="intel-l">zones surging</span>
+        </div>
+        <div class="intel-stat">
+          <span id="intel-gap" class="intel-n">—</span>
+          <span class="intel-l">avg service gap</span>
+        </div>
+      </div>
+
+      <!-- HEAT ISLAND -->
+      <div class="heat-block">
+        <div class="heat-hdr">
+          <span class="heat-title">🌡 Urban Heat Island</span>
+          <span class="heat-sub">Dense areas run hotter · trees are cooling infrastructure</span>
+        </div>
+        <div id="heat-rows" class="heat-rows">
+          <span class="muted-sm">Loading temperatures…</span>
+        </div>
+      </div>
+
+      <!-- DISPATCH QUEUE -->
+      <div class="zones-hdr">
+        <div class="zones-title">Dispatch Queue</div>
+        <div id="zones-sub" class="zones-sub">Ranked by open requests + drought stress · click to navigate</div>
+      </div>
+      <div class="sort-grp">
+        <button class="sort-btn active" data-sort="urgency" onclick="setSortMode('urgency')">Urgency</button>
+        <button class="sort-btn" data-sort="neglect" onclick="setSortMode('neglect')">Neglect</button>
+        <button class="sort-btn" data-sort="trend" onclick="setSortMode('trend')">Trending</button>
+      </div>
+      <div class="zone-search-w">
+        <span class="zs-icon">⌕</span>
+        <input id="zone-search" class="zone-search" type="text" placeholder="Search a neighborhood…" autocomplete="off">
+        <button id="zs-clear" class="zs-clear hidden" title="Clear">✕</button>
+      </div>
+      <div id="zone-list" class="zone-list"></div>
+
+    </aside>
+  </div>
+</div>
+
+<!-- DISPATCH MODAL -->
+<div id="modal-overlay" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-hdr-left">
+        <div class="modal-eyebrow">Arborist Dispatch Brief</div>
+        <div class="modal-hdr-row">
+          <span id="modal-title" class="modal-title"></span>
+          <span id="modal-tier" class="modal-tier"></span>
+        </div>
+      </div>
+      <button id="modal-close" class="modal-close">✕</button>
+    </div>
+    <div id="modal-body" class="modal-body">
+      <div class="loading-msg">Generating field briefing…</div>
+    </div>
+  </div>
+</div>
+
+<!-- HELP / ONBOARDING -->
+<div id="help-overlay" class="help-overlay hidden">
+  <div class="help-card">
+    <button id="help-close" class="help-close">✕</button>
+    <div class="help-logo">🌳 Canopy</div>
+    <div class="help-tag">Chicago Urban Tree Dispatch — how to read it</div>
+    <ol class="help-steps">
+      <li>
+        <span class="hs-num">1</span>
+        <div><b>The map shows urgency.</b> Each neighborhood is shaded by how much tree-service pressure it's under — <span class="hc-red">red = critical</span> down to <span class="hc-grn">green = clear</span>. Zoom in to reveal individual open 311 request pins.</div>
+      </li>
+      <li>
+        <span class="hs-num">2</span>
+        <div><b>The queue ranks where to send crews.</b> Sort by <b>Urgency</b>, <b>Neglect</b> (longest since service), or <b>Trending</b> (fastest-rising). Use search to jump to any neighborhood.</div>
+      </li>
+      <li>
+        <span class="hs-num">3</span>
+        <div><b>Click a zone for the field brief.</b> An AI dispatch summary, complaint trend, repeat-problem addresses, service history, and live canopy data from OpenStreetMap &amp; iNaturalist.</div>
+      </li>
+    </ol>
+    <div class="help-csi">
+      <div class="hc-title">What is CSI?</div>
+      <div class="hc-body"><b>Canopy Stress Index (0–100)</b> blends five signals into one dispatch priority: open &amp; unresolved requests, complaint surge vs. last month, drought stress, time since last service, and <b>community vulnerability</b> (Chicago Hardship Index). Higher = more urgent. Flip the map to <b>Social vulnerability</b> to see where the most at-risk communities are.</div>
+    </div>
+    <button id="help-got" class="help-got">Got it — show me the map</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
