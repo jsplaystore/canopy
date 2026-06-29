@@ -5,3 +5,9 @@
 # Dependencies / build
 node_modules/
 .vercel/
+
+# Dev screenshot scripts/artifacts (contain local paths)
+screenshot*.cjs
+screenshot*.mjs
+screenshot-*.png
+ss*.png
